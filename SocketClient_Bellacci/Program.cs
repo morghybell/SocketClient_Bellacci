@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 
 namespace SocketClient_Bellacci
 {
@@ -52,6 +53,29 @@ namespace SocketClient_Bellacci
                 //sblocca la asset nel server
                 //per collegarsi al socket server 127.0.0.1  23000
                 client.Connect(ipAddress, nPort);
+
+                byte[] buff = new byte[128];
+                string sendString = "";
+                string receiveString = "";
+                int receivedBytes = 0;
+
+                while (true)
+                {
+                    Console.WriteLine("Mando un messaggio: ");
+                    sendString = Console.ReadLine();
+                    buff = Encoding.ASCII.GetBytes(sendString);
+                    client.Send(buff);
+
+                    if (sendString.ToUpper().Trim() == "QUIT") 
+                    {
+                        break;
+                    }
+
+                    Array.Clear(buff, 0, buff.Length);
+                    receivedBytes = client.Receive(buff);
+                    receiveString = Encoding.ASCII.GetString(buff, 0, receivedBytes);
+                    Console.WriteLine("S: " + receiveString);
+                }
             }
             catch (Exception ex)
             {
